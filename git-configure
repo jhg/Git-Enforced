@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+read -p 'Name: ' name
+read -p 'Email: ' email
+cat << EOF
+[core]
+	excludesfile = ~/.gitexcludes
+	hooksPath = ~/.githooks
+[user]
+	email = $email
+	name = $name
+[rerere]
+	enabled = 1
+EOF
+
+
+# Global hooks
+
+mkdir -p ~/.githooks
+
+## commit-msg hook to check it's not empty
+cat > ~/.githooks/commit-msg << EOF
+#!/usr/bin/env bash
+
+if ! grep '^[^#][a-zA-Z0-9]\+[ ][a-zA-Z0-9 ]\{3,\}' "\$1"
+then
+    echo 'Write an useful commit message please'
+    exit 1
+fi
+EOF
+echo 'Created global hook to check commit message is not empty'
+
+
+# Exclude globally
+
+touch ~/.gitexcludes
+echo 'Add to ~/.gitexcludes files patterns to exclude always'
